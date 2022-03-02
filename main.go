@@ -13,6 +13,7 @@ const (
 	lastYear  = 2999
 )
 
+// calcDiffDays calculates the difference between two dates.
 func calcDiffDays(y1, m1, d1, y2, m2, d2 int) (int, error) {
 	i1 := indexOfDay(y1, m1, d1)
 	i2 := indexOfDay(y2, m2, d2)
@@ -28,27 +29,29 @@ func calcDiffDays(y1, m1, d1, y2, m2, d2 int) (int, error) {
 	return i2 - i1 - 1, nil
 }
 
-func processDates() error {
+// readDate reads a date from the standard input and returns its component in year, month and day.
+func readDate() (int, int, int, error) {
 	var reader = bufio.NewReader(os.Stdin)
 
+	date, err := reader.ReadString('\n')
+	if err != nil {
+		return 0, 0, 0, err
+	}
+
+	date = strings.TrimSpace(date)
+
+	return parseDate(date)
+}
+
+func processDates() error {
 	fmt.Printf("Enter the first date in d/m/Y format (like 3/1/1989):")
-	date1, err := reader.ReadString('\n')
+	y1, m1, d1, err := readDate()
 	if err != nil {
 		return err
 	}
 
-	y1, m1, d1, err := parseDate(strings.TrimSpace(date1))
-	if err != nil {
-		return err
-	}
-
-	fmt.Printf("Enter the second date in d/m/Y format (like 3/1/1989):")
-	date2, err := reader.ReadString('\n')
-	if err != nil {
-		return err
-	}
-
-	y2, m2, d2, err := parseDate(strings.TrimSpace(date2))
+	fmt.Printf("Enter the second date in d/m/Y format (like 31/12/1989):")
+	y2, m2, d2, err := readDate()
 	if err != nil {
 		return err
 	}
@@ -58,7 +61,7 @@ func processDates() error {
 		return err
 	}
 
-	fmt.Println(fmt.Sprintf("The diff is %d days", diffDays))
+	fmt.Printf("The difference between %d/%d/%d and %d/%d/%d days is %d day(s).", d1, m1, y1, d2, m2, y2, diffDays)
 
 	return nil
 }
