@@ -4,19 +4,34 @@ The purpose of this program is to calculate the number of the days between two d
 
 For example, between 1st and 3rd of January of this year, there is only 1 day.
 
+# Install
+
+This program is distributed in source code only. 
+In order to run it, you need to install Go compiler. 
+Follow the instructions on [this](https://go.dev/doc/install) page.
+
+After installing Go, you can install the program with the following command:
+
+```
+go install github.com/halmai/datediff@latest
+```
+
 # Usage
 
 Start the program with the following command:
 
-`go run .`
+`datediff`
 
 The program asks for the two dates. Both must be given in `<day>/<month>/<year>` format and they must be valid dates of the 1900-2999 years.
 
-* In case of entering valid dates, the progam writes a message to the standard output like this:
+* In case of entering valid dates, the program writes a message to the standard output like this:
 
 ```
-The difference between 3/1/1989 and 21/12/1989 days is 351 day(s).
+The difference between the given dates is 351 days.
 ```
 
-* In case of providing invalid data, the program stops with meaningful error messages.
-  
+* In case of providing invalid data, the program stops with a meaningful error message.
+
+# Contribution
+
+If you want to contribute to the project, please raise pull requests on GitHub.

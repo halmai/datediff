@@ -1,9 +1,79 @@
 package main
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
+
+func TestParseDate(t *testing.T) {
+	tests := []struct {
+		name       string
+		sendString string
+		wantYMD    [3]int
+		wantErrStr string
+	}{
+		{
+			name:       "GivenStringWithNotThreeParts_WhenParseDateCalled_ThenErrorIsReturned",
+			sendString: "this/is/not/a/three-component/date/string",
+			wantErrStr: "date is not in format DD/MM/YYYY",
+		},
+		{
+			name:       "GivenStringWithNotNumbers_WhenParseDateCalled_ThenErrorIsReturned",
+			sendString: "this/is/nonnumerical",
+			wantErrStr: "date is not in format DD/MM/YYYY",
+		},
+		{
+			name:       "GivenTooSmallYear_WhenParseDateCalled_ThenErrorIsReturned",
+			sendString: "1/2/1899",
+			wantErrStr: "year part of date cannot be parsed: value \"1899\" is out of range [1900,2999]",
+		},
+		{
+			name:       "GivenTooLargeYear_WhenParseDateCalled_ThenErrorIsReturned",
+			sendString: "1/2/3000",
+			wantErrStr: "year part of date cannot be parsed: value \"3000\" is out of range [1900,2999]",
+		},
+		{
+			name:       "GivenTooSmallMonth_WhenParseDateCalled_ThenErrorIsReturned",
+			sendString: "1/0/2022",
+			wantErrStr: "month part of date cannot be parsed: value \"0\" is out of range [1,12]",
+		},
+		{
+			name:       "GivenTooLargeMonth_WhenParseDateCalled_ThenErrorIsReturned",
+			sendString: "1/13/2022",
+			wantErrStr: "month part of date cannot be parsed: value \"13\" is out of range [1,12]",
+		},
+		{
+			name:       "GivenTooSmallDay_WhenParseDateCalled_ThenErrorIsReturned",
+			sendString: "0/12/2022",
+			wantErrStr: "day part of date cannot be parsed: value \"0\" is out of range [1,31]",
+		},
+		{
+			name:       "GivenTooLargeDay_WhenParseDateCalled_ThenErrorIsReturned",
+			sendString: "32/12/2022",
+			wantErrStr: "day part of date cannot be parsed: value \"32\" is out of range [1,31]",
+		},
+		{
+			name:       "GivenTooLargeDay_WhenParseDateCalled_ThenErrorIsReturned",
+			sendString: "31/12/2022",
+			wantYMD:    [3]int{2022, 12, 31},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			y, m, d, gotErr := parseDate(test.sendString)
+
+			if test.wantErrStr == "" {
+				assert.Nil(t, gotErr)
+				assert.Equal(t, test.wantYMD, [3]int{y, m, d})
+			} else {
+				assert.Equal(t, test.wantErrStr, gotErr.Error())
+				assert.Equal(t, [3]int{0, 0, 0}, [3]int{y, m, d})
+			}
+		})
+	}
+}
 
 func TestParseInt(t *testing.T) {
 	tests := []struct {

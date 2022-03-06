@@ -2,19 +2,20 @@ package main
 
 import (
 	"fmt"
-	"github.com/pkg/errors"
 	"regexp"
 	"strconv"
+
+	"errors"
 )
 
 // parseDate converts a date written in "d/m/yyyy" form into year, month and day integers.
 func parseDate(s string) (int, int, int, error) {
-	re := regexp.MustCompile(`^([0-9]{1,2})/([0-9]{1,2})/([0-9]{4})$`)
+	re := regexp.MustCompile(`^([0-9]+)/([0-9]+)/([0-9]+)$`)
 
 	parts := re.FindStringSubmatch(s)
 
-	if len(parts) != 4 {
-		return 0, 0, 0, errors.New("date has no 3 parts")
+	if parts == nil {
+		return 0, 0, 0, errors.New("date is not in format DD/MM/YYYY")
 	}
 
 	year, err := parseInt(parts[3], firstYear, lastYear)
@@ -28,7 +29,9 @@ func parseDate(s string) (int, int, int, error) {
 	}
 
 	lom := lengthOfMonth(year, month)
+
 	day, err := parseInt(parts[1], 1, lom)
+
 	if err != nil {
 		return 0, 0, 0, fmt.Errorf("day part of date cannot be parsed: %w", err)
 	}

@@ -3,7 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"github.com/pkg/errors"
+	"io"
 	"os"
 	"strings"
 )
@@ -13,63 +13,58 @@ const (
 	lastYear  = 2999
 )
 
-// calcDiffDays calculates the difference between two dates.
-func calcDiffDays(y1, m1, d1, y2, m2, d2 int) (int, error) {
-	i1 := indexOfDay(y1, m1, d1)
-	i2 := indexOfDay(y2, m2, d2)
-
-	if i1 == i2 {
-		return 0, errors.New("dates must be different")
-	}
-
-	if i1 > i2 {
-		return i1 - i2 - 1, nil
-	}
-
-	return i2 - i1 - 1, nil
-}
-
-// readDate reads a date from the standard input and returns its component in year, month and day.
-func readDate() (int, int, int, error) {
-	var reader = bufio.NewReader(os.Stdin)
+// readDate reads a date from the standard input and returns its component in year, month and day,
+// or an error if the date is invalid.
+func readDate(rd io.Reader) (string, error) {
+	var reader = bufio.NewReader(rd)
 
 	date, err := reader.ReadString('\n')
 	if err != nil {
-		return 0, 0, 0, err
+		return "", err
 	}
 
-	date = strings.TrimSpace(date)
-
-	return parseDate(date)
+	return strings.TrimSpace(date), nil
 }
 
-func processDates() error {
+func processDates(rd io.Reader) (int, error) {
 	fmt.Printf("Enter the first date in d/m/Y format (like 3/1/1989):")
-	y1, m1, d1, err := readDate()
+
+	date1, err := readDate(rd)
 	if err != nil {
-		return err
+		return 0, err
+	}
+
+	y1, m1, d1, err := parseDate(date1)
+	if err != nil {
+		return 0, err
 	}
 
 	fmt.Printf("Enter the second date in d/m/Y format (like 31/12/1989):")
-	y2, m2, d2, err := readDate()
+	date2, err := readDate(rd)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	diffDays, err := calcDiffDays(y1, m1, d1, y2, m2, d2)
+	y2, m2, d2, err := parseDate(date2)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	fmt.Printf("The difference between %d/%d/%d and %d/%d/%d days is %d day(s).", d1, m1, y1, d2, m2, y2, diffDays)
-
-	return nil
+	return calcDiffDays(y1, m1, d1, y2, m2, d2)
 }
 
 func main() {
-	err := processDates()
+	diffDays, err := processDates(os.Stdin)
 
 	if err != nil {
 		fmt.Println("Error during execution:", err)
+		return
 	}
+
+	if diffDays == 1 {
+		fmt.Printf("The difference between the given dates is %d day.", diffDays)
+	} else {
+		fmt.Printf("The difference between the given dates is %d days.", diffDays)
+	}
+
 }
