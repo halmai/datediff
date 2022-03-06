@@ -13,6 +13,10 @@ const (
 	lastYear  = 2999
 )
 
+type outputCollector interface {
+	Printf(s string)
+}
+
 // readDate reads a date from the standard input and returns its component in year, month and day,
 // or an error if the date is invalid.
 func readDate(rd io.Reader) (string, error) {
@@ -26,8 +30,8 @@ func readDate(rd io.Reader) (string, error) {
 	return strings.TrimSpace(date), nil
 }
 
-func processDates(rd io.Reader) (int, error) {
-	fmt.Printf("Enter the first date in d/m/Y format (like 3/1/1989):")
+func processDates(rd io.Reader, oc outputCollector) (int, error) {
+	oc.Printf("Enter the first date in d/m/Y format (like 3/1/1989):")
 
 	date1, err := readDate(rd)
 	if err != nil {
@@ -39,7 +43,7 @@ func processDates(rd io.Reader) (int, error) {
 		return 0, err
 	}
 
-	fmt.Printf("Enter the second date in d/m/Y format (like 31/12/1989):")
+	oc.Printf("Enter the second date in d/m/Y format (like 31/12/1989):")
 	date2, err := readDate(rd)
 	if err != nil {
 		return 0, err
@@ -53,8 +57,15 @@ func processDates(rd io.Reader) (int, error) {
 	return calcDiffDays(y1, m1, d1, y2, m2, d2)
 }
 
+type oc struct{}
+
+func (o oc) Printf(s string) {
+	fmt.Printf(s)
+}
+
 func main() {
-	diffDays, err := processDates(os.Stdin)
+	var oc oc
+	diffDays, err := processDates(os.Stdin, oc)
 
 	if err != nil {
 		fmt.Println("Error during execution:", err)
