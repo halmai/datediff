@@ -22,6 +22,9 @@ Start the program with the following command:
 
 `datediff`
 
+Note: If it doesn't start, check whether your `$GOPATH` directory, where the program has been installed into, is in your `$PATH`. 
+The `go env GOPATH` command tells the installation directory. Add this value to your `$PATH` if needed.
+
 The program asks for the two dates. Both must be given in `<day>/<month>/<year>` format and they must be valid dates of the 1900-2999 years.
 
 * In case of entering valid dates, the program writes a message to the standard output like this:
