@@ -7,6 +7,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+type mockOutputCollector struct{}
+
+func (moc mockOutputCollector) Printf(string) {}
+
 type mockReaderResponse struct {
 	line string
 	err  error
@@ -16,10 +20,6 @@ type mockReader struct {
 	invocationIndex *int
 	responses       []mockReaderResponse
 }
-
-type mockOutputCollector struct{}
-
-func (moc mockOutputCollector) Printf(string) {}
 
 func (m mockReader) Read(p []byte) (n int, err error) {
 	if errX := m.responses[*m.invocationIndex].err; errX != nil {

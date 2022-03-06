@@ -1,4 +1,4 @@
-package main
+package datecalc
 
 import (
 	"testing"
@@ -49,7 +49,7 @@ func TestCalcDiffDays(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			gotDiff, gotErr := calcDiffDays(
+			gotDiff, gotErr := CalcDiffDays(
 				test.sendYMD1[0],
 				test.sendYMD1[1],
 				test.sendYMD1[2],

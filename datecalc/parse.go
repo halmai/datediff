@@ -1,4 +1,4 @@
-package main
+package datecalc
 
 import (
 	"fmt"
@@ -8,8 +8,8 @@ import (
 	"errors"
 )
 
-// parseDate converts a date written in "d/m/yyyy" form into year, month and day integers.
-func parseDate(s string) (int, int, int, error) {
+// ParseDate converts a date written in "d/m/yyyy" form into year, month and day integers.
+func ParseDate(s string) (int, int, int, error) {
 	re := regexp.MustCompile(`^([0-9]+)/([0-9]+)/([0-9]+)$`)
 
 	parts := re.FindStringSubmatch(s)

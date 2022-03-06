@@ -6,15 +6,18 @@ import (
 	"io"
 	"os"
 	"strings"
+
+	"github.com/halmai/datediff/datecalc"
 )
 
-const (
-	firstYear = 1900
-	lastYear  = 2999
-)
-
-type outputCollector interface {
+type outputWriter interface {
 	Printf(s string)
+}
+
+type outputColl struct{}
+
+func (o outputColl) Printf(s string) {
+	fmt.Printf(s)
 }
 
 // readDate reads a date from the standard input and returns its component in year, month and day,
@@ -22,49 +25,43 @@ type outputCollector interface {
 func readDate(rd io.Reader) (string, error) {
 	var reader = bufio.NewReader(rd)
 
-	date, err := reader.ReadString('\n')
+	d, err := reader.ReadString('\n')
 	if err != nil {
 		return "", err
 	}
 
-	return strings.TrimSpace(date), nil
+	return strings.TrimSpace(d), nil
 }
 
-func processDates(rd io.Reader, oc outputCollector) (int, error) {
-	oc.Printf("Enter the first date in d/m/Y format (like 3/1/1989):")
+func processDates(rd io.Reader, out outputWriter) (int, error) {
+	out.Printf("Enter the first date in d/m/Y format (like 3/1/1989):")
 
 	date1, err := readDate(rd)
 	if err != nil {
 		return 0, err
 	}
 
-	y1, m1, d1, err := parseDate(date1)
+	y1, m1, d1, err := datecalc.ParseDate(date1)
 	if err != nil {
 		return 0, err
 	}
 
-	oc.Printf("Enter the second date in d/m/Y format (like 31/12/1989):")
+	out.Printf("Enter the second date in d/m/Y format (like 31/12/1989):")
 	date2, err := readDate(rd)
 	if err != nil {
 		return 0, err
 	}
 
-	y2, m2, d2, err := parseDate(date2)
+	y2, m2, d2, err := datecalc.ParseDate(date2)
 	if err != nil {
 		return 0, err
 	}
 
-	return calcDiffDays(y1, m1, d1, y2, m2, d2)
-}
-
-type oc struct{}
-
-func (o oc) Printf(s string) {
-	fmt.Printf(s)
+	return datecalc.CalcDiffDays(y1, m1, d1, y2, m2, d2)
 }
 
 func main() {
-	var oc oc
+	var oc outputColl
 	diffDays, err := processDates(os.Stdin, oc)
 
 	if err != nil {

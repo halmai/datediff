@@ -1,4 +1,4 @@
-package main
+package datecalc
 
 import (
 	"testing"
@@ -62,7 +62,7 @@ func TestParseDate(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			y, m, d, gotErr := parseDate(test.sendString)
+			y, m, d, gotErr := ParseDate(test.sendString)
 
 			if test.wantErrStr == "" {
 				assert.Nil(t, gotErr)
